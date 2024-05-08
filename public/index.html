@@ -1,16 +1,376 @@
-<!-- robozzle/public/index.html -->
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+
+<html>
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robozzle Game</title>
+    <title>RoboZZle - a social puzzle game</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/web/20231018145834js_/http://www.robozzle.com/beta/jquery.soap.js"></script>
+    <script type="text/javascript" src="/web/20231018145834js_/http://www.robozzle.com/beta/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="/web/20231018145834js_/http://www.robozzle.com/beta/spin.min.js"></script>
+    <script type="text/javascript" src="/web/20231018145834js_/http://www.robozzle.com/beta/sha1.js"></script>
+    <script type="text/javascript" src="app.js"></script>
 </head>
 
 <body>
-    <h1>Welcome to Robozzle!</h1>
-    <script src="app.js"></script>
+    <div class="page-border">
+        <header class="page-head">
+            <h1 class="page-head__title">RoboZZle</h1>
+            <h2 class="page-head__subtitle">a social puzzle game</h2>
+        </header>
+        <ul class="page-menu">
+            <li id="menu-levels" class="page-menu__item" style="width: 100px">Puzzles</li>
+            <li id="menu-makepuzzle" class="page-menu__item" style="width: 100px">Make a Puzzle</li>
+            <li id="menu-forums" class="page-menu__item" style="width: 70px"><a
+                    href="/web/20231018145834/http://www.robozzle.com/forums/" target="_blank">Forums</a></li>
+            <li id="menu-wiki" class="page-menu__item" style="width: 70px"><a
+                    href="/web/20231018145834/http://www.robozzle.com/wiki/" target="_blank">Wiki</a></li>
+            <li id="menu-chat" class="page-menu__item" style="width: 70px"><a
+                    href="/web/20231018145834/http://www.robozzle.com/irc/" target="_blank">Chat</a></li>
+            <li id="menu-user" class="page-menu__item -right" style="width: 66px"><a href="#" target="_blank">name</a>
+            </li>
+            <li id="menu-register" class="page-menu__item -right" style="width: 66px">Register</li>
+            <li id="menu-signin" class="page-menu__item -right" style="width: 66px">Sign In</li>
+            <li id="menu-signout" class="page-menu__item -right" style="width: 66px">Sign Out</li>
+        </ul>
+        <div class="page-content">
+            <div id="content-levels" class="page-content__tab content-levels">
+                <div class="content-levels__levels-panel">
+                    <ul class="level-sort">
+                        <li class="level-sort__item" data-kind="-1">Tutorial</li>
+                        <li class="level-sort__item" data-kind="0">Campaign</li>
+                        <li class="level-sort__item" data-kind="3">Popular</li>
+                        <li class="level-sort__item" data-kind="1">Easy to hard</li>
+                        <li class="level-sort__item" data-kind="2">New to old</li>
+                    </ul>
+                    <div class="level-list">
+                        <ul id="level-page" class="level-list__level-page">
+                        </ul>
+                        <div id="level-list-spinner" class="level-list__spinner">
+                        </div>
+                        <button id="level-list-refresh" class="level-list__refresh">Refresh</button>
+                        <div class="level-list__page-control">
+                            <div>
+                                <button id="pagefirst">First</button><button id="pageprev">Prev</button><input
+                                    type="text" id="pagecurrent" class="level-list__page-control__current"
+                                    value="1">/<span id="pagemax" class="level-list__page-control__max">1</span><button
+                                    id="pagenext">Next</button><button id="pagelast">Last</button>
+                            </div>
+                        </div>
+                        <div class="level-list__hide-solved">
+                            <input type="checkbox" id="hidesolved"><label for="hidesolved">Hide solved</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="scoreboard" class="scoreboard-panel content-levels__scoreboard-panel">
+                    <h1>Most Puzzles Solved</h1>
+                    <table id="topsolvers" class="scoreboard-panel__score-list">
+                    </table>
+                    <h1>Most Solved Today</h1>
+                    <table id="topsolverstoday" class="scoreboard-panel__score-list">
+                    </table>
+                    <a href="/web/20231018145834/http://www.robozzle.com/scoreboard.aspx" target="_blank">Full
+                        scoreboard</a>
+                </div>
+            </div>
+            <div id="content-game" class="page-content__tab content-game">
+                <div id="board-container" class="content-game__board-panel">
+                    <div id="board-status" class="content-game__board-status board-status">
+                        <div class="board-status__heading">
+                            <span class="board-status__title">Text</span>
+                            <a class="board-status__comments">comments</a>
+                            <a class="board-status__stats">stats</a>
+                        </div>
+                        <div class="board-status__about"></div>
+                    </div>
+                    <div id="tutorial-modal"></div>
+                    <div id="tutorial" class="tutorial-dialog">
+                        <span id="tutorial-message" class="tutorial-dialog__message"></span>
+                        <div class="tutorial-dialog__button-list">
+                            <button id="tutorial-back">Back</button>
+                            <button id="tutorial-continue">Continue</button>
+                            <button id="tutorial-solve">Solve the puzzle</button>
+                        </div>
+                    </div>
+                    <div id="board" class="board">
+                    </div>
+                </div>
+                <div id="program-container" class="content-game__program-panel">
+                    <div id="program" class="program">
+                        <div id="program-list" class="program-list">
+                        </div>
+                        <div class="program-control">
+                            <div>
+                                <button id="program-go" class="program-control__go">Go!</button><button
+                                    id="program-step" class="program-control__step">Step</button>
+                            </div>
+                            <button id="program-edit" class="program-control__edit">Edit Puzzle</button>
+                            <div class="program-control__speed-container">
+                                <div>Slow</div>
+                                <div><input id="program-speed" class="program-control__speed" type="range" min="0"
+                                        max="10" value="5"></div>
+                                <div>Fast</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="program-toolbar-container" class="content-game__program-toolbar-panel">
+                    <div id="program-toolbar" class="program-toolbar">
+                    </div>
+                </div>
+                <div id="design-toolbar-container" class="content-game__design-toolbar-panel">
+                    <div id="design-toolbar" class="design-toolbar">
+                    </div>
+                </div>
+                <div id="design-panel-container" class="content-game__design-panel">
+                    <div class="design-panel">
+                        <p><label for="design-title">Title:</label><input class="design-panel__input" type="text"
+                                id="design-title"></p>
+                        <p><label for="design-about">Description:</label><input class="design-panel__input" type="text"
+                                id="design-about"></p>
+                        <p><label class="design-panel__sub-label" for="design-f1">F1 commands:</label><input
+                                class="design-panel__sub" type="number" min="1" max="10" id="design-f1"></p>
+                        <p><label class="design-panel__sub-label" for="design-f2">F2 commands:</label><input
+                                class="design-panel__sub" type="number" min="0" max="10" id="design-f2"></p>
+                        <p><label class="design-panel__sub-label" for="design-f3">F3 commands:</label><input
+                                class="design-panel__sub" type="number" min="0" max="10" id="design-f3"></p>
+                        <p><label class="design-panel__sub-label" for="design-f4">F4 commands:</label><input
+                                class="design-panel__sub" type="number" min="0" max="10" id="design-f4"></p>
+                        <p><label class="design-panel__sub-label" for="design-f5">F5 commands:</label><input
+                                class="design-panel__sub" type="number" min="0" max="10" id="design-f5"></p>
+                        <fieldset>
+                            <legend>Allow special commands</legend>
+                            <p><input type="checkbox" id="design-red"><label for="design-red">Paint tile red</label></p>
+                            <p><input type="checkbox" id="design-green"><label for="design-green">Paint tile
+                                    green</label></p>
+                            <p><input type="checkbox" id="design-blue"><label for="design-blue">Paint tile blue</label>
+                            </p>
+                        </fieldset>
+                        <button id="design-solve" class="design-panel__solve">Provide Solution</button>
+                    </div>
+                </div>
+                <div id="program-stack-container" class="content-game__program-stack program-stack-container">
+                    <div id="program-stack" class="program-stack">
+                    </div>
+                </div>
+                <div id="program-selection" class="program-selection condition">
+                    <div class="program-selection__command command">
+                    </div>
+                </div>
+                <div id="design-selection" class="board__tile tile">
+                    <div class="tile__robot">
+                    </div>
+                    <div class="tile__item">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dialog-modal"></div>
+    <div id="dialogs">
+        <div id="dialog-message" class="dialog">
+            <div class="dialog-title">
+            </div>
+            <form>
+                <div class="dialog-message">
+                </div>
+                <div class="dialog-button">
+                    <button id="dialog-message-ok" type="submit">OK</button>
+                </div>
+            </form>
+        </div>
+        <div id="dialog-register" class="dialog">
+            <div class="dialog-title">
+                <span>Register</span>
+            </div>
+            <div id="dialog-register-error" class="dialog-error">
+                <span>Server request failed.</span>
+            </div>
+            <form>
+                <table>
+                    <tr>
+                        <td><label for="name">Username:</label></td>
+                        <td><input type="text" name="name"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">Password:</label></td>
+                        <td><input type="password" name="password"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password2">Password again:</label></td>
+                        <td><input type="password" name="password2"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="email">Email (optional):</label></td>
+                        <td><input type="text" name="email"></td>
+                    </tr>
+                </table>
+                <div class="dialog-button">
+                    <button id="dialog-register-submit" type="submit">Register</button>
+                    <button id="dialog-register-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div id="dialog-signin" class="dialog">
+            <div class="dialog-title">
+                <span>Sign In</span>
+            </div>
+            <div id="dialog-signin-error" class="dialog-error">
+                <span>Invalid username / password.</span>
+            </div>
+            <form>
+                <table>
+                    <tr>
+                        <td><label for="name">Username:</label></td>
+                        <td><input type="text" name="name"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="password">Password:</label></td>
+                        <td><input type="password" name="password"></td>
+                    </tr>
+                </table>
+                <div class="dialog-link">
+                    <a href="/web/20231018145834/http://www.robozzle.com/forgotpassword.aspx" target="_blank">Forgot
+                        password</a>
+                </div>
+                <div class="dialog-button">
+                    <button id="dialog-signin-submit" type="submit">Sign In</button>
+                    <button id="dialog-signin-cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <div id="dialog-solved" class="dialog">
+            <div class="dialog-title">
+                <span>Congratulations!</span>
+            </div>
+            <form>
+                <div id="dialog-solved-message" class="dialog-message">
+                    You've completed the puzzle. You can play another puzzle, or replay the same one.
+                </div>
+                <div id="dialog-solved-form">
+                    <div id="dialog-solved-difficulty" class="difficulty-input">
+                        <input type="radio" id="dialog-solved-difficulty-1" name="difficulty" value="1"
+                            autocomplete="off">
+                        <label for="dialog-solved-difficulty-1" class="difficulty-input__val"><span>Very
+                                easy</span></label>
+                        <input type="radio" id="dialog-solved-difficulty-2" name="difficulty" value="2"
+                            autocomplete="off">
+                        <label for="dialog-solved-difficulty-2" class="difficulty-input__val"><span>Easy</span></label>
+                        <input type="radio" id="dialog-solved-difficulty-3" name="difficulty" value="3"
+                            autocomplete="off">
+                        <label for="dialog-solved-difficulty-3"
+                            class="difficulty-input__val"><span>Moderate</span></label>
+                        <input type="radio" id="dialog-solved-difficulty-4" name="difficulty" value="4"
+                            autocomplete="off">
+                        <label for="dialog-solved-difficulty-4" class="difficulty-input__val"><span>Hard</span></label>
+                        <input type="radio" id="dialog-solved-difficulty-5" name="difficulty" value="5"
+                            autocomplete="off">
+                        <label for="dialog-solved-difficulty-5" class="difficulty-input__val"><span>Very
+                                hard</span></label>
+                    </div>
+                    <div id="dialog-solved-difficulty-label"></div>
+                    <br>
+                    <div class="votes">
+                        <input type="checkbox" id="dialog-solved-like" name="like" autocomplete="off">
+                        <label for="dialog-solved-like">Like</label>
+                        <span class="liked">+</span><span>/</span><span class="disliked">-</span>
+                        <input type="checkbox" id="dialog-solved-dislike" name="dislike" autocomplete="off">
+                        <label for="dialog-solved-dislike">Dislike</label>
+                    </div>
+                    <!--
+                        <br>
+                        <div>
+                            <label for="comment">Comment:</label>
+                            <input type="text" name="comment" autocomplete="off">
+                        </div>
+                        -->
+                    <br>
+                </div>
+                <div class="dialog-link stats">
+                    More on this puzzle:
+                    <a class="stats">solution lengths</a>,
+                    <a class="comments">comments</a>
+                </div>
+                <div class="dialog-button">
+                    <button id="dialog-solved-more" type="submit">More puzzles</button>
+                    <button id="dialog-solved-replay">Replay</button>
+                </div>
+            </form>
+        </div>
+        <div id="dialog-design-solved" class="dialog">
+            <div class="dialog-title">
+                <span>Ready to submit</span>
+            </div>
+            <div id="dialog-design-solved-error" class="dialog-error">
+                <span>Server request failed.</span>
+            </div>
+            <form>
+                <div>
+                    You can submit the puzzle now.
+                </div>
+                <div class="dialog-link">
+                    Please read the
+                    <a href="http://www.robozzle.com/wiki/Puzzle%20Design%20Guidelines.ashx" target="_blank">Puzzle
+                        Design Guidelines</a>
+                    prior to submitting.
+                </div>
+                <div class="dialog-button">
+                    <button id="dialog-design-solved-submit" type="submit">Submit</button>
+                    <button id="dialog-design-solved-edit">Keep Editing</button>
+                </div>
+            </form>
+        </div>
+        <div id="dialog-tutorial-solved" class="dialog">
+            <div class="dialog-title">
+            </div>
+            <form>
+                <div class="dialog-message">
+                </div>
+                <div class="dialog-button">
+                    <button id="dialog-tutorial-solved-continue" type="submit">Continue</button>
+                    <button id="dialog-tutorial-solved-register" type="submit">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="templates">
+        <ul>
+            <li class="level-item level-list__level-item">
+                <div class="level-item__level-title">
+                </div>
+                <div class="level-item__level-difficulty">
+                    <div class="level-item__level-difficulty-val"></div>
+                    <div class="level-item__level-difficulty-val"></div>
+                    <div class="level-item__level-difficulty-val"></div>
+                    <div class="level-item__level-difficulty-val"></div>
+                    <div class="level-item__level-difficulty-val"></div>
+                </div>
+                <div class="stats level-item__level-details">
+                    <a class="stats level-item__level-stats">stats</a>
+                    <a class="comments level-item__level-comments">comments</a>
+                    <span class="level-item__level-author">author:
+                        <a class="level-item__level-author-name">author</a>
+                    </span>
+                </div>
+                <div class="level-item__level-votes">
+                    <span class="level-item__level-votes-liked">+</span>/<span
+                        class="level-item__level-votes-disliked">-</span>
+                </div>
+            </li>
+        </ul>
+        <table>
+            <tr class="score-item">
+                <td class="score-item__value"></td>
+                <td class="score-item__name"></td>
+            </tr>
+        </table>
+    </div>
+    <script
+        type="text/javascript"> var gaJsHost = (("https:" == document.location.protocol) ? "http://web.archive.org/web/20231018145834/https://ssl." : "http://web.archive.org/web/20231018145834/http://www."); document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E")); </script>
+    <script
+        type="text/javascript"> try { var pageTracker = _gat._getTracker("UA-4374255-2"); pageTracker._trackPageview(); } catch (err) { }</script>
 </body>
 
 </html>
