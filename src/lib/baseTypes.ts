@@ -5,3 +5,17 @@ export enum RobotStates {
   Stepping = 3,
   Finished = 4
 }
+
+
+export enum RobotDirection {
+  Right = 0,
+  Down = 1,
+  Left = 2,
+  Up = 3,
+}
+
+export interface RobotPosition {
+  row: number,
+  col: number,
+  direction: RobotDirection,
+}

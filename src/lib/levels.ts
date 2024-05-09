@@ -1,3 +1,6 @@
+import { RegionInfo } from "aws-cdk-lib/region-info";
+import { RobotDirection } from "./baseTypes";
+
 export interface Level {
   Id: string,
   NextId: string | null,
@@ -5,7 +8,7 @@ export interface Level {
   Items: string[],
   RobotRow: number,
   RobotCol: number,
-  RobotDir: number,
+  RobotDir: RobotDirection,
   AllowedCommands: number,
   DisallowSubs: boolean,
   DisallowColors: boolean,
@@ -51,7 +54,7 @@ export const TUTORIAL_LEVELS: Level[] = [
     ],
     RobotRow: 5,
     RobotCol: 7,
-    RobotDir: 0,
+    RobotDir: RobotDirection.Right,
     AllowedCommands: 0,
     DisallowSubs: true,
     DisallowColors: true,
@@ -99,7 +102,7 @@ export const TUTORIAL_LEVELS: Level[] = [
     ],
     RobotRow: 5,
     RobotCol: 7,
-    RobotDir: 0,
+    RobotDir: RobotDirection.Right,
     AllowedCommands: 0,
     DisallowSubs: false,
     DisallowColors: true,
@@ -145,7 +148,7 @@ export const TUTORIAL_LEVELS: Level[] = [
     ],
     RobotRow: 5,
     RobotCol: 3,
-    RobotDir: 0,
+    RobotDir: RobotDirection.Right,
     AllowedCommands: 0,
     DisallowSubs: false,
     DisallowColors: true,
@@ -189,7 +192,7 @@ export const TUTORIAL_LEVELS: Level[] = [
     ],
     RobotRow: 2,
     RobotCol: 4,
-    RobotDir: 0,
+    RobotDir: RobotDirection.Right,
     AllowedCommands: 0,
     DisallowSubs: false,
     DisallowColors: false,

@@ -1,4 +1,4 @@
-import { RobotStates } from './lib/baseTypes';
+import { RobotDirection, RobotStates } from './lib/baseTypes';
 import { TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
 
 
@@ -52,7 +52,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         selectionOffset: null,
         hoverCommand: null,
         hoverCondition: null,
-        robotDir: 0,
+        robotDir: RobotDirection.Right,
         robotDeg: 0,
         robotCol: 0,
         robotRow: 0,
@@ -1666,19 +1666,19 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         var crash = false;
         var col = robozzle.robotCol;
         var row = robozzle.robotRow;
-        if (robozzle.robotDir == 0) {
+        if (robozzle.robotDir == RobotDirection.Right) {
             col++;
             if (col >= robozzle.level.Colors[0].length)
                 crash = true;
-        } else if (robozzle.robotDir == 1) {
+        } else if (robozzle.robotDir == RobotDirection.Down) {
             row++;
             if (row >= robozzle.level.Colors.length)
                 crash = true;
-        } else if (robozzle.robotDir == 2) {
+        } else if (robozzle.robotDir == RobotDirection.Left) {
             col--;
             if (col < 0)
                 crash = true;
-        } else if (robozzle.robotDir == 3) {
+        } else if (robozzle.robotDir == RobotDirection.Up) {
             row--;
             if (row < 0)
                 crash = true;
@@ -1707,7 +1707,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         robozzle.stepWait();
     };
 
-    robozzle.turnRobot = function (right) {
+    robozzle.turnRobot = function (right: boolean): void {
         var dir = robozzle.robotDir;
         if (right) {
             dir++;
