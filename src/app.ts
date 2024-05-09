@@ -632,7 +632,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 return robozzle.level.SubLengths[4];
             }
 
-            var allowedCommands = parseInt(robozzle.level.AllowedCommands);
+            let allowedCommands = robozzle.level.AllowedCommands;
             if (command == 'R') {
                 return allowedCommands & 1;
             }
@@ -785,8 +785,8 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return encodeState.output;
         };
 
-        decodeBits(decodeState, bits) {
-            var val = 0;
+        decodeBits(decodeState, bits): number {
+            let val = 0;
             for (var i = 0; i < bits; i++) {
                 if (decodeState.bits == 0) {
                     var c = decodeState.input.charCodeAt(decodeState.index);
@@ -1112,7 +1112,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 $toolbar.append($group);
             }
 
-            var allowedCommands = parseInt(level.AllowedCommands);
+            let allowedCommands = level.AllowedCommands;
             if (allowedCommands) {
                 var $group = $('<div/>').addClass('program-toolbar__icon-group');
                 if (allowedCommands & 1) {
