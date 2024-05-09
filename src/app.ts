@@ -1,6 +1,6 @@
 import { RobotDirection, RobotStates } from './lib/baseTypes';
-import { decodeBits, decodeProgram, encodeBits, encodeProgram } from './lib/encoder';
-import { Level, TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
+import { decodeBits, decodeProgram, encodeBits, encodeProgram, encodeSOAP } from './lib/encoder';
+import { Level, TUTORIAL_LEVELS, getDefaultLevel, isTutorialLevel } from './lib/levels';
 
 
 var _____WB$wombat$assign$function_____ = function (name) { return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
@@ -173,52 +173,10 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         };
 
 
-        encodeSOAPObject(SOAPObject, prefix, name, data, depth) {
-            var soapObject = new SOAPObject(prefix + name);
-
-            var childObject;
-            var childName;
-            if (data === null) {
-                soapObject.attr('xsi:nil', 'true');
-            } else if ($.isArray(data)) {
-                prefix = 'ns' + depth;
-                soapObject.attr('xmlns:' + prefix, 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
-                for (var i = 0; i < data.length; i++) {
-                    childName = typeof data[i] == 'number' ? 'int' : 'string';
-                    childObject = robozzle.encodeSOAPObject(SOAPObject, prefix + ':', childName, data[i], depth + 1);
-                    soapObject.appendChild(childObject);
-                }
-            } else if (typeof data == 'object') {
-                prefix = 'ns' + depth;
-                soapObject.attr('xmlns:' + prefix, 'http://schemas.datacontract.org/2004/07/RoboCoder.GameState');
-                for (childName in data) {
-                    childObject = robozzle.encodeSOAPObject(SOAPObject, prefix + ':', childName, data[childName], depth + 1);
-                    soapObject.appendChild(childObject);
-                }
-            } else {
-                soapObject.val('' + data); // the ''+ is added to fix issues with falsey values.
-            }
-            return soapObject;
-        };
-
-        encodeSOAP(SOAPObject, method, data) {
-            var soapObject = new SOAPObject(method);
-            soapObject.attr('xmlns', 'http://tempuri.org/');
-
-            var childObject;
-            var prefix = '';
-            var depth = 1;
-            for (var childName in data) {
-                childObject = robozzle.encodeSOAPObject(SOAPObject, prefix, childName, data[childName], depth);
-                soapObject.appendChild(childObject);
-            }
-            return soapObject;
-        };
-
         service(method, data, success, error) {
             var url = '/RobozzleService.svc';
             if (document.domain === 'robozzle.com') {
-                url = 'ttp://www.robozzle.com/RobozzleService.svc';
+                url = 'http://www.robozzle.com/RobozzleService.svc';
             }
             return $.soap({
                 url: url,
@@ -226,7 +184,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 namespaceURL: 'http://tempuri.org/',
                 SOAPAction: 'http://tempuri.org/IRobozzleService/' + method,
                 method: method,
-                data: function (SOAPObject) { return robozzle.encodeSOAP(SOAPObject, method, data); },
+                data: function (SOAPObject) { return encodeSOAP(SOAPObject, method, data); },
                 success: function (soapResponse) {
                     var response = robozzle.parseXML(soapResponse.toXML()).Body[method + 'Response'];
                     success(response[method + 'Result'], response);
@@ -239,7 +197,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         topSolversResponse(table, solved, names) {
             var item;
-            for (var i = 0; i < solved.length; i++) {
+            for (let i = 0; i < solved.length; i++) {
                 item = $('#templates .score-item').clone();
                 item.find('.score-item__value').text(solved[i]);
                 item.find('.score-item__name').append(
@@ -1236,19 +1194,18 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             $toolbar.append(makeRobot(3, 'Robot up'));
         };
 
-        encodeDesign(level) {
+        encodeDesign(level: Level): string {
             var encodeState = {
                 output: '',
                 val: 0,
                 bits: 0
             };
-            var i, j;
 
             encodeBits(encodeState, 0, 3); // Version number = 0
-            for (j = 0; j < level.Colors.length; j++) {
+            for (let j = 0; j < level.Colors.length; j++) {
                 var colors = level.Colors[j];
                 var items = level.Items[j];
-                for (i = 0; i < colors.length; i++) {
+                for (let i = 0; i < colors.length; i++) {
                     var val = 0;
                     if (items.charAt(i) != '#') {
                         if (colors.charAt(i) == 'R') {
@@ -1268,7 +1225,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             encodeBits(encodeState, level.RobotRow, 4);
             encodeBits(encodeState, level.RobotCol, 4);
             encodeBits(encodeState, level.RobotDir, 2);
-            for (i = 0; i < level.SubLengths.length; i++) {
+            for (let i = 0; i < level.SubLengths.length; i++) {
                 encodeBits(encodeState, level.SubLengths[i], 4);
             }
             encodeBits(encodeState, level.AllowedCommands, 3);
@@ -1277,7 +1234,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return encodeState.output;
         };
 
-        decodeDesign(input): Level {
+        decodeDesign(input: string): Level {
             if (!input) {
                 return null;
             }
@@ -1382,46 +1339,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        defaultDesign(): Level {
-            return {
-                Colors: [
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                    "BBBBBBBBBBBBBBBB",
-                ],
-                Items: [
-                    "################",
-                    "################",
-                    "################",
-                    "################",
-                    "################",
-                    "#######..#######",
-                    "#######.*#######",
-                    "################",
-                    "################",
-                    "################",
-                    "################",
-                    "################",
-                ],
-                RobotDir: 0,
-                RobotCol: 7,
-                RobotRow: 6,
-                AllowedCommands: 0,
-                SubLengths: [10, 0, 0, 0, 0],
-                Title: '',
-                About: '',
-            }
-        }
-
         readDesign(): Level {
             let robotColors: string[] = [];
             let robotItems: string[] = [];
@@ -1503,7 +1420,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             status.find('.board-status__comments').hide();
 
             if (!robozzle.design) {
-                robozzle.design = robozzle.defaultDesign();
+                robozzle.design = getDefaultLevel();
             }
             robozzle.displayBoard(robozzle.design, true);
             robozzle.displayProgram(robozzle.design, robozzle.designProgram);

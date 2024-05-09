@@ -1,3 +1,48 @@
+
+export function encodeSOAPObject(SOAPObject, prefix, name, data, depth) {
+  var soapObject = new SOAPObject(prefix + name);
+
+  var childObject;
+  var childName;
+  if (data === null) {
+    soapObject.attr('xsi:nil', 'true');
+  } else if ($.isArray(data)) {
+    prefix = 'ns' + depth;
+    soapObject.attr('xmlns:' + prefix, 'http://schemas.microsoft.com/2003/10/Serialization/Arrays');
+    for (var i = 0; i < data.length; i++) {
+      childName = typeof data[i] == 'number' ? 'int' : 'string';
+      childObject = encodeSOAPObject(SOAPObject, prefix + ':', childName, data[i], depth + 1);
+      soapObject.appendChild(childObject);
+    }
+  } else if (typeof data == 'object') {
+    prefix = 'ns' + depth;
+    soapObject.attr('xmlns:' + prefix, 'http://schemas.datacontract.org/2004/07/RoboCoder.GameState');
+    for (childName in data) {
+      childObject = encodeSOAPObject(SOAPObject, prefix + ':', childName, data[childName], depth + 1);
+      soapObject.appendChild(childObject);
+    }
+  } else {
+    soapObject.val('' + data); // the ''+ is added to fix issues with falsey values.
+  }
+  return soapObject;
+};
+
+export function encodeSOAP(SOAPObject, method, data) {
+  var soapObject = new SOAPObject(method);
+  soapObject.attr('xmlns', 'http://tempuri.org/');
+
+  var childObject;
+  var prefix = '';
+  var depth = 1;
+  for (var childName in data) {
+    childObject = encodeSOAPObject(SOAPObject, prefix, childName, data[childName], depth);
+    soapObject.appendChild(childObject);
+  }
+  return soapObject;
+};
+
+
+
 export interface StateToEncode {
   output: string,
   val: number,

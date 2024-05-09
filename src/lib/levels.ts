@@ -213,3 +213,44 @@ export const TUTORIAL_LEVELS: Level[] = [
 export function isTutorialLevel(id: string): boolean {
   return parseInt(id) < 0;
 };
+
+
+export function getDefaultLevel(): Level {
+  return {
+    Colors: [
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+      "BBBBBBBBBBBBBBBB",
+    ],
+    Items: [
+      "################",
+      "################",
+      "################",
+      "################",
+      "################",
+      "#######..#######",
+      "#######.*#######",
+      "################",
+      "################",
+      "################",
+      "################",
+      "################",
+    ],
+    RobotDir: 0,
+    RobotCol: 7,
+    RobotRow: 6,
+    AllowedCommands: 0,
+    SubLengths: [10, 0, 0, 0, 0],
+    Title: '',
+    About: '',
+  }
+}
