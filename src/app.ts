@@ -1,5 +1,5 @@
 import { RobotDirection, RobotStates } from './lib/baseTypes';
-import { TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
+import { Level, TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
 
 
 var _____WB$wombat$assign$function_____ = function (name) { return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
@@ -14,64 +14,127 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
     let frames = _____WB$wombat$assign$function_____("frames");
     let opener = _____WB$wombat$assign$function_____("opener");
 
-    var robozzle = {
-        urlCallback: null,
-        urlTimeout: null,
+    class Robozzle {
+        urlCallback: any;
+        urlTimeout: any;
 
         // level list info
-        levelLoading: null,         // Handle of ajax request
-        levelReload: false,         // A new request is needed
+        levelLoading: any;          // Handle of ajax request
+        levelReload: boolean;       // A new request is needed
 
-        sortKind: -1,               // Currently selected level tab - Tutorial
-        hideSolved: false,          // Currently hide solved option
+        sortKind: number;           // Currently selected level tab - Tutorial
+        hideSolved: boolean;        // Currently hide solved option
 
-        blockSortKind: -1,          // Sort kind for last request
-        blockHideSolved: false,     // Hide solved option for last request
-        blockUserName: false,       // Username for last request
+        blockSortKind: number;      // Sort kind for last request
+        blockHideSolved: boolean;   // Hide solved option for last request
+        blockUserName: boolean;     // Username for last request
 
-        blockIndex: 0,              // Index of first entry of levels
-        blockSize: 64,              // Number of levels to download at a time
-        pageIndex: 0,               // Index of first displayed level
-        pageSize: 8,                // Number of levels to display at a time
+        blockIndex: number;         // Index of first entry of levels
+        blockSize: number;          // Number of levels to download at a time
+        pageIndex: number;          // Index of first displayed level
+        pageSize: number;           // Number of levels to display at a time
 
-        levels: null,               // Downloaded levels
-        levelCount: 0,              // Server reported number of levels
+        levels: any;                // Downloaded levels
+        levelCount: number;         // Server reported number of levels
 
         // user info
-        userName: null,
-        password: null,
-        solvedLevels: {},
-        likeVotes: {},
-        difficultyVotes: {},
+        userName: string | null;
+        password: string | null;
+        solvedLevels: any;
+        likeVotes: any;
+        difficultyVotes: any;
 
         // active level info
-        level: null,
-        selection: false,
-        selectionCommand: null,
-        selectionCondition: null,
-        selectionOffset: null,
-        hoverCommand: null,
-        hoverCondition: null,
-        robotDir: RobotDirection.Right,
-        robotDeg: 0,
-        robotCol: 0,
-        robotRow: 0,
-        robotAnimation: null,
-        robotState: RobotStates.Reset,
-        boardBreakPoint: null,
+        level: Level | null;
+        selection: boolean;
+        selectionCommand: string | null;
+        selectionCondition: any
+        selectionOffset: any;
+        hoverCommand: any;
+        hoverCondition: any;
+        robotDir: RobotDirection;
+        robotDeg: number;
+        robotCol: number;
+        robotRow: number;
+        robotAnimation: any;
+        robotState: RobotStates;
+        boardBreakPoint: any;
 
         // tutorial info
-        tutorialStage: 0,
+        tutorialStage: number;
 
         // design info
-        designSelection: false,
-        designSelectionColor: null,
-        designSelectionItem: null,
-        designSelectionRobot: null,
-        designSelectionOffset: null,
-        designHoverColor: null,
-        designHoverRobot: null,
-    };
+        designSelection: boolean;
+        designSelectionColor: any;
+        designSelectionItem: any;
+        designSelectionRobot: any;
+        designSelectionOffset: any;
+        designHoverColor: any;
+        designHoverRobot: any;
+
+
+        constructor() {
+            this.level = null;
+            this.urlCallback = null;
+            this.urlTimeout = null;
+
+            // level list info
+            this.levelLoading = null;         // Handle of ajax request
+            this.levelReload = false;         // A new request is needed
+
+            this.sortKind = -1;               // Currently selected level tab - Tutorial
+            this.hideSolved = false;          // Currently hide solved option
+
+            this.blockSortKind = -1;          // Sort kind for last request
+            this.blockHideSolved = false;     // Hide solved option for last request
+            this.blockUserName = false;       // Username for last request
+
+            this.blockIndex = 0;              // Index of first entry of levels
+            this.blockSize = 64;              // Number of levels to download at a time
+            this.pageIndex = 0;               // Index of first displayed level
+            this.pageSize = 8;                // Number of levels to display at a time
+
+            this.levels = null;               // Downloaded levels
+            this.levelCount = 0;              // Server reported number of levels
+
+            // user info
+            this.userName = null;
+            this.password = null;
+            this.solvedLevels = {};
+            this.likeVotes = {};
+            this.difficultyVotes = {};
+
+            // active level info
+            this.level = null;
+            this.selection = false;
+            this.selectionCommand = null;
+            this.selectionCondition = null;
+            this.selectionOffset = null;
+            this.hoverCommand = null;
+            this.hoverCondition = null;
+            this.robotDir = RobotDirection.Right;
+            this.robotDeg = 0;
+            this.robotCol = 0;
+            this.robotRow = 0;
+            this.robotAnimation = null;
+            this.robotState = RobotStates.Reset;
+            this.boardBreakPoint = null;
+
+            // tutorial info
+            this.tutorialStage = 0;
+
+            // design info
+            this.designSelection = false;
+            this.designSelectionColor = null;
+            this.designSelectionItem = null;
+            this.designSelectionRobot = null;
+            this.designSelectionOffset = null;
+            this.designHoverColor = null;
+            this.designHoverRobot = null;
+        }
+    }
+
+    var robozzle = new Robozzle();
 
     (function ($) {
         $.fn.updateClass = function (classBase, classVal) {
@@ -644,7 +707,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         $('#program-selection .command').updateClass('-command', robozzle.selectionCommand || robozzle.hoverCommand || null);
     };
 
-    robozzle.setSelection = function (condition, command) {
+    robozzle.setSelection = function (condition, command: string): void {
         if (!$('#program-toolbar').is(':visible')) {
             return;
         }
@@ -1040,7 +1103,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         });
     };
 
-    robozzle.displayProgramToolbar = function (level) {
+    robozzle.displayProgramToolbar = function (level: Level) {
         var $toolbar = $('#program-toolbar').empty();
         var makeCommand = function (command, title) {
             var ret = $('<button id="program-toolbar-command-' + command + '" class="program-toolbar__icon"/>')
