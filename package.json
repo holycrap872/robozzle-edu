@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jquery": "^3.5.30",
     "nodemon": "^3.1.0",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
