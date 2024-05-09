@@ -378,7 +378,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return robozzle.service('GetLevelsPaged', request, success, error);
         }
 
-        getLevels(is_force: boolean) {
+        getLevels(is_force: boolean): void {
             robozzle.setPageTab('levels');
 
             // Prevent multiple requests
@@ -426,7 +426,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 } else if (robozzle.pageIndex >= robozzle.levelCount) {
                     robozzle.getLevels(false);
                 } else {
-                    robozzle.displayLevels(false);
+                    robozzle.displayLevels();
                 }
             }, function () {
                 robozzle.levelLoading = null;
@@ -668,7 +668,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             $('#program-selection .command').updateClass('-command', robozzle.selectionCommand || robozzle.hoverCommand || null);
         };
 
-        setSelection(condition, command: string): void {
+        setSelection(condition: string | null, command: string | null): void {
             if (!$('#program-toolbar').is(':visible')) {
                 return;
             }
@@ -1554,54 +1554,51 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        defaultDesign() {
-            var level = {};
-            level.Colors = [
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-            ];
-            level.Items = [
-                "################",
-                "################",
-                "################",
-                "################",
-                "################",
-                "#######..#######",
-                "#######.*#######",
-                "################",
-                "################",
-                "################",
-                "################",
-                "################",
-            ];
-            level.RobotDir = 0;
-            level.RobotCol = 7;
-            level.RobotRow = 6;
-            level.AllowedCommands = 0;
-            level.SubLengths = [10, 0, 0, 0, 0];
-            level.Title = '';
-            level.About = '';
-            return level;
-        };
+        defaultDesign(): Level {
+            return {
+                Colors: [
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                    "BBBBBBBBBBBBBBBB",
+                ],
+                Items: [
+                    "################",
+                    "################",
+                    "################",
+                    "################",
+                    "################",
+                    "#######..#######",
+                    "#######.*#######",
+                    "################",
+                    "################",
+                    "################",
+                    "################",
+                    "################",
+                ],
+                RobotDir: 0,
+                RobotCol: 7,
+                RobotRow: 6,
+                AllowedCommands: 0,
+                SubLengths: [10, 0, 0, 0, 0],
+                Title: '',
+                About: '',
+            }
+        }
 
-        readDesign() {
-            var level = {
-                Colors: [],
-                Items: [],
-                SubLengths: []
-            };
+        readDesign(): Level {
             var i, j;
 
+            let robotColors: string[] = [];
+            let robotItems: string[] = [];
             for (j = 0; j < robozzle.board.length; j++) {
                 var colors = '';
                 var items = '';
@@ -1624,22 +1621,11 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                         }
                     }
                 }
-                level.Colors.push(colors);
-                level.Items.push(items);
+                robotColors.push(colors);
+                robotItems.push(items);
             }
-            level.RobotDir = robozzle.robotDir;
-            level.RobotCol = robozzle.robotCol;
-            level.RobotRow = robozzle.robotRow;
-            level.AllowedCommands = 0;
-            if ($('#design-red').prop('checked')) {
-                level.AllowedCommands += 1;
-            }
-            if ($('#design-green').prop('checked')) {
-                level.AllowedCommands += 2;
-            }
-            if ($('#design-blue').prop('checked')) {
-                level.AllowedCommands += 4;
-            }
+
+            let robotSubLengths: number[] = [];
             for (i = 0; i < 5; i++) {
                 var min = i == 0 ? 1 : 0;
                 var val = parseInt($('#design-f' + (i + 1)).val());
@@ -1648,11 +1634,28 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 } else if (val > 10) {
                     val = 10;
                 }
-                level.SubLengths.push(val);
+                robotSubLengths.push(val);
             }
-            level.Title = $('#design-title').val();
-            level.About = $('#design-about').val();;
-            return level;
+
+            let robotAllowedCommands = 0;
+            if ($('#design-red').prop('checked')) {
+                robotAllowedCommands += 1;
+            }
+            if ($('#design-green').prop('checked')) {
+                robotAllowedCommands += 2;
+            }
+            if ($('#design-blue').prop('checked')) {
+                robotAllowedCommands += 4;
+            }
+
+            return {
+                RobotDir: robozzle.robotDir,
+                RobotCol: robozzle.robotCol,
+                RobotRow: robozzle.robotRow,
+                AllowedCommands: robotAllowedCommands,
+                Title: $('#design-title').val(),
+                About: $('#design-about').val(),
+            }
         };
 
         displayDesign() {
@@ -2791,7 +2794,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             $('#hidesolved').prop('checked', robozzle.hideSolved);
         }
 
-        var setRobotSpeed = function (robotSpeed) {
+        var setRobotSpeed = function (robotSpeed: string) {
             robotSpeed = parseInt(robotSpeed);
             if (isNaN(robotSpeed) || robotSpeed < 0 || robotSpeed > 10) {
                 robotSpeed = 5;
