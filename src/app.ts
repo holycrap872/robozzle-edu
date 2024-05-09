@@ -23,7 +23,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         blockSortKind: number;      // Sort kind for last request
         blockHideSolved: boolean;   // Hide solved option for last request
-        blockUserName: boolean;     // Username for last request
+        blockUserName: string;      // Username for last request
 
         blockIndex: number;         // Index of first entry of levels
         blockSize: number;          // Number of levels to download at a time
@@ -78,7 +78,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
             this.blockSortKind = -1;          // Sort kind for last request
             this.blockHideSolved = false;     // Hide solved option for last request
-            this.blockUserName = false;       // Username for last request
+            this.blockUserName = null;       // Username for last request
 
             this.blockIndex = 0;              // Index of first entry of levels
             this.blockSize = 64;              // Number of levels to download at a time
