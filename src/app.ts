@@ -50,8 +50,8 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         selectionCommand: string | null;
         selectionCondition: any
         selectionOffset: any;
-        hoverCommand: any;
-        hoverCondition: any;
+        hoverCommand: string | null;
+        hoverCondition: string | null;
         robotDir: RobotDirection;
         robotDeg: number;
         robotCol: number;
@@ -646,7 +646,16 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return 0;
         };
 
-        hoverSelection(condition, command) {
+        hoverSelection(condition: string | null, command: string | null): void {
+            if (condition !== null && typeof condition !== "string") {
+                console.log(condition)
+                throw new TypeError("Expected `condition` to be of type string | null");
+            }
+            if (condition !== null && typeof command !== "string") {
+                console.log(command)
+                throw new TypeError("Expected `command` to be of type string | null");
+            }
+
             robozzle.hoverCondition = condition;
             robozzle.hoverCommand = command;
         };
