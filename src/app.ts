@@ -583,29 +583,29 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         robozzle.robotAnimation.stackCount = 1;
     };
 
-    robozzle.allowedCommand = function (command) {
+    robozzle.allowedCommand = function (command: string): number {
         if (!robozzle.level) {
-            return;
+            return 0;
         }
 
         if (command == 'f' || command == 'l' || command == 'r') {
-            return true;
+            return 1;
         }
 
         if (command == '1') {
-            return parseInt(robozzle.level.SubLengths[0]);
+            return robozzle.level.SubLengths[0];
         }
         if (command == '2') {
-            return parseInt(robozzle.level.SubLengths[1]);
+            return robozzle.level.SubLengths[1];
         }
         if (command == '3') {
-            return parseInt(robozzle.level.SubLengths[2]);
+            return robozzle.level.SubLengths[2];
         }
         if (command == '4') {
-            return parseInt(robozzle.level.SubLengths[3]);
+            return robozzle.level.SubLengths[3];
         }
         if (command == '5') {
-            return parseInt(robozzle.level.SubLengths[4]);
+            return robozzle.level.SubLengths[4];
         }
 
         var allowedCommands = parseInt(robozzle.level.AllowedCommands);
@@ -619,7 +619,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return allowedCommands & 4;
         }
 
-        return false;
+        return 0;
     };
 
     robozzle.hoverSelection = function (condition, command) {
@@ -860,7 +860,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         var $sublist = $('#program-list').empty();
         for (var j = 0; j < 5; j++) {
             var sub = [];
-            var sublength = parseInt(level.SubLengths[j]);
+            var sublength: number = level.SubLengths[j];
             if (!sublength) {
                 program.push(sub);
                 continue;
@@ -1071,7 +1071,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         if (!level.DisallowSubs) {
             var $group = $('<div/>').addClass('program-toolbar__icon-group');
             for (var i = 0; i < 5; i++) {
-                if (parseInt(level.SubLengths[i])) {
+                if (level.SubLengths[i]) {
                     $group.append(makeCommand(i + 1, 'Call F' + (i + 1) + ' (' + (i + 1) + ')'));
                 }
             }
