@@ -1,4 +1,5 @@
 import { RobotStates } from './lib/baseTypes';
+import { TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
 
 
 var _____WB$wombat$assign$function_____ = function (name) { return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
@@ -258,7 +259,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         var html = $('#templates .level-item').clone();
         html.attr('data-level-id', level.Id);
         html.find('.level-item__level-title').text(level.Title);
-        if (robozzle.isTutorialLevel(level.Id)) {
+        if (isTutorialLevel(level.Id)) {
             html.find('.level-item__level-difficulty').hide();
             html.find('.level-item__level-details').hide();
             html.find('.level-item__level-votes').hide();
@@ -330,9 +331,9 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         if (robozzle.sortKind < 0) {
             var response = {
-                totalCount: robozzle.tutorialLevels.length,
+                totalCount: TUTORIAL_LEVELS.length,
                 GetLevelsPagedResult: {
-                    LevelInfo2: robozzle.tutorialLevels
+                    LevelInfo2: TUTORIAL_LEVELS
                 }
             }
             success(null, response);
@@ -467,176 +468,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             easing: "linear",
             progress: robozzle.displayRobot
         });
-    };
-
-    robozzle.tutorialLevels = [
-        {
-            Id: "-1",
-            NextId: "-2",
-            Colors: [
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-            ],
-            Items: [
-                "################",
-                "################",
-                "################",
-                "#####.....######",
-                "####.......#####",
-                "####.*...*.#####",
-                "####.......#####",
-                "#####.....######",
-                "################",
-                "################",
-                "################",
-                "################",
-            ],
-            RobotRow: 5, RobotCol: 7, RobotDir: 0,
-            AllowedCommands: 0,
-            DisallowSubs: true,
-            DisallowColors: true,
-            Title: "Tutorial: Part 1", About: "",
-            SubLengths: [10, 0, 0, 0, 0],
-            Tutorial: [
-                '<b>Welcome to Robozzle!</b><br><br>Your task is to program a robot to pick up all stars in a level.',
-                'In this puzzle, you get to use three commands: go straight, turn left, turn right (see bottom right).',
-                'You will program the robot by placing the commands into the program slots (see bottom right).',
-                'Now, go ahead and program the robot! When you think that your program will work, press the "Go!" button.'
-            ]
-        }, {
-            Id: "-2",
-            NextId: "-3",
-            Colors: [
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-            ],
-            Items: [
-                "################",
-                "################",
-                "################",
-                "#####.....######",
-                "####.......#####",
-                "####.*...*.#####",
-                "####.......#####",
-                "#####.....######",
-                "################",
-                "################",
-                "################",
-                "################",
-            ],
-            RobotRow: 5, RobotCol: 7, RobotDir: 0,
-            AllowedCommands: 0,
-            DisallowColors: true,
-            Title: "Tutorial: Part 2", About: "",
-            SubLengths: [5, 2, 0, 0, 0],
-            Tutorial: [
-                'In this puzzle, you have command slots available for a helper subroutine F2 (see bottom right).',
-                'When you use the F2 command, the robot will execute the commands from the F2 slots.',
-                'In this puzzle, you\'ll want to put two "go straight" commands into F2. Then, any time you use the F2 command, the robot will go forward twice. See if you can solve it.'
-            ]
-        }, {
-            Id: "-3",
-            NextId: "-4",
-            Colors: [
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-                "BBBBBBBBBBBBBBBB",
-            ],
-            Items: [
-                "################",
-                "################",
-                "################",
-                "################",
-                "###..........###",
-                "###.********.###",
-                "###..........###",
-                "################",
-                "################",
-                "################",
-                "################",
-                "################"
-            ],
-            RobotRow: 5, RobotCol: 3, RobotDir: 0,
-            AllowedCommands: 0,
-            DisallowColors: true,
-            Title: "Tutorial: Part 3", About: "",
-            SubLengths: [2, 0, 0, 0, 0],
-            Tutorial: [
-                'See if you can figure out how to solve this puzzle. You need to use the F1 command.'
-            ]
-        }, {
-            Id: "-4",
-            Colors: [
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRBRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-                "RRRRRRRRRRRRRRRR",
-            ],
-            Items: [
-                "################",
-                "################",
-                "####.*******####",
-                "###########*####",
-                "###########*####",
-                "###########*####",
-                "###########*####",
-                "###########*####",
-                "###########*####",
-                "################",
-                "################",
-                "################"
-            ],
-            RobotRow: 2, RobotCol: 4, RobotDir: 0,
-            AllowedCommands: 0,
-            Title: "Tutorial: Part 4", About: "",
-            SubLengths: [3, 0, 0, 0, 0],
-            Tutorial: [
-                'Let\'s make things even more interesting. You can mark a command with a particular color, and then the command will be skipped if the robot stands on a tile with a different color.',
-                'For example, a blue right turn command will cause the robot to turn right if it is on a blue tile, but it will be skipped if the robot is on a green or a red tile.',
-                'In this puzzle, you need to combine a blue right turn with the trick you saw in the previous puzzle. Go for it!'
-            ]
-        }
-    ];
-
-    robozzle.isTutorialLevel = function (id) {
-        return parseInt(id) < 0;
     };
 
     robozzle.displayBoard = function (level, design) {
@@ -1285,7 +1116,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
     robozzle.displayTutorial = function (level) {
         $('.-tutorial-highlight').removeClass('-tutorial-highlight');
 
-        if (!level || !robozzle.isTutorialLevel(level.Id)) {
+        if (!level || !isTutorialLevel(level.Id)) {
             $('#tutorial-modal').hide();
             $('#tutorial').hide();
             return;
@@ -1346,7 +1177,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         robozzle.level = level;
         robozzle.tutorialStage = 0;
 
-        if (robozzle.isTutorialLevel(level.Id)) {
+        if (isTutorialLevel(level.Id)) {
             $('#board-status').hide();
         } else if (robozzle.level.Id) {
             var status = $('#board-status');
@@ -1378,8 +1209,8 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
     robozzle.setGame = function (id, program) {
         robozzle.design = null;
         var levels = robozzle.levels;
-        if (robozzle.isTutorialLevel(id)) {
-            levels = robozzle.tutorialLevels;
+        if (isTutorialLevel(id)) {
+            levels = TUTORIAL_LEVELS;
         }
         if (levels !== null) {
             var level;
@@ -1969,7 +1800,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             $(robozzle.robotAnimation).queue(function () {
                 if (robozzle.level.Id) {
                     robozzle.submitSolution();
-                    if (robozzle.isTutorialLevel(robozzle.level.Id)) {
+                    if (isTutorialLevel(robozzle.level.Id)) {
                         robozzle.showTutorialSolved();
                     } else {
                         robozzle.showSolved();
