@@ -1,4 +1,5 @@
 import { RobotDirection, RobotStates } from './lib/baseTypes';
+import { decodeBits, decodeProgram, encodeBits, encodeProgram } from './lib/encoder';
 import { Level, TUTORIAL_LEVELS, isTutorialLevel } from './lib/levels';
 
 
@@ -703,188 +704,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.selection = false;
         };
 
-        encodeBits(encodeState, val, bits) {
-            for (var i = 0; i < bits; i++) {
-                if (val & (1 << i)) {
-                    encodeState.val |= (1 << encodeState.bits);
-                }
-                encodeState.bits++;
-                if (encodeState.bits == 6) {
-                    var c;
-                    if (encodeState.val < 26) {
-                        c = String.fromCharCode(97 + encodeState.val);
-                    } else if (encodeState.val < 52) {
-                        c = String.fromCharCode(65 + encodeState.val - 26);
-                    } else if (encodeState.val < 62) {
-                        c = String.fromCharCode(48 + encodeState.val - 52);
-                    } else if (encodeState.val < 62) {
-                        c = '_';
-                    } else {
-                        c = '-';
-                    }
-                    encodeState.output = encodeState.output + c;
-                    encodeState.val = 0;
-                    encodeState.bits = 0;
-                }
-            }
-        };
-
-        encodeCommand(encodeState, cond, cmd) {
-            switch (cond) {
-                case 'R': cond = 1; break;
-                case 'G': cond = 2; break;
-                case 'B': cond = 3; break;
-                default: cond = 0; break;
-            }
-
-            var subcmd;
-            var sublen = 0;
-            switch (cmd) {
-                case 'f': cmd = 1; break;
-                case 'l': cmd = 2; break;
-                case 'r': cmd = 3; break;
-                case '1': cmd = 4; subcmd = 0; sublen = 3; break;
-                case '2': cmd = 4; subcmd = 1; sublen = 3; break;
-                case '3': cmd = 4; subcmd = 2; sublen = 3; break;
-                case '4': cmd = 4; subcmd = 3; sublen = 3; break;
-                case '5': cmd = 4; subcmd = 4; sublen = 3; break;
-                case 'R': cmd = 5; subcmd = 1; sublen = 2; break;
-                case 'G': cmd = 5; subcmd = 2; sublen = 2; break;
-                case 'B': cmd = 5; subcmd = 3; sublen = 2; break;
-                default: cmd = 0; break;
-            }
-
-            robozzle.encodeBits(encodeState, cond, 2);
-            robozzle.encodeBits(encodeState, cmd, 3);
-            if (sublen) {
-                robozzle.encodeBits(encodeState, subcmd, sublen);
-            }
-        };
-
-        encodeProgram() {
-            var encodeState = {
-                output: '',
-                val: 0,
-                bits: 0
-            };
-
-            robozzle.encodeBits(encodeState, 0, 3); // Version number = 0
-            robozzle.encodeBits(encodeState, robozzle.program.length, 3);
-            for (var j = 0; j < robozzle.program.length; j++) {
-                var sub = robozzle.program[j];
-                robozzle.encodeBits(encodeState, sub.length, 4);
-                for (var i = 0; i < sub.length; i++) {
-                    var $cmd = sub[i];
-                    var cond = $cmd.getClass('-condition');
-                    var cmd = $cmd.find('.command').getClass('-command');
-                    robozzle.encodeCommand(encodeState, cond, cmd);
-                }
-            }
-
-            robozzle.encodeBits(encodeState, 0, 5); // Flush
-            return encodeState.output;
-        };
-
-        decodeBits(decodeState, bits): number {
-            let val = 0;
-            for (var i = 0; i < bits; i++) {
-                if (decodeState.bits == 0) {
-                    var c = decodeState.input.charCodeAt(decodeState.index);
-                    decodeState.index++;
-                    if (c >= 97 && c < 97 + 26) {
-                        decodeState.val = c - 97;
-                    } else if (c >= 65 && c < 65 + 26) {
-                        decodeState.val = c - 65 + 26;
-                    } else if (c >= 48 && c < 48 + 10) {
-                        decodeState.val = c - 48 + 52;
-                    } else if (c == 95) {
-                        decodeState.val = 62;
-                    } else if (c == 45) {
-                        decodeState.val = 63;
-                    } else {
-                        decodeState.val = 0;
-                    }
-                    decodeState.bits = 6;
-                }
-                if (decodeState.val & (1 << (6 - decodeState.bits))) {
-                    val |= (1 << i);
-                }
-                decodeState.bits--;
-            }
-            return val;
-        };
-
-        decodeCommand(decodeState) {
-            var cond = robozzle.decodeBits(decodeState, 2);
-            switch (cond) {
-                case 1: cond = 'R'; break;
-                case 2: cond = 'G'; break;
-                case 3: cond = 'B'; break;
-                default: cond = null; break;
-            }
-
-            var cmd = robozzle.decodeBits(decodeState, 3);
-            switch (cmd) {
-                case 1: cmd = 'f'; break;
-                case 2: cmd = 'l'; break;
-                case 3: cmd = 'r'; break;
-                case 4:
-                    var subcmd = robozzle.decodeBits(decodeState, 3);
-                    switch (subcmd) {
-                        case 0: cmd = '1'; break;
-                        case 1: cmd = '2'; break;
-                        case 2: cmd = '3'; break;
-                        case 3: cmd = '4'; break;
-                        case 4: cmd = '5'; break;
-                        default: cmd = null; break;
-                    }
-                    break;
-                case 5:
-                    var subcmd = robozzle.decodeBits(decodeState, 2);
-                    switch (subcmd) {
-                        case 1: cmd = 'R'; break;
-                        case 2: cmd = 'G'; break;
-                        case 3: cmd = 'B'; break;
-                        default: cmd = null; break;
-                    }
-                    break;
-                default: cmd = null; break;
-            }
-
-            return [cond, cmd];
-        };
-
-        decodeProgram(input) {
-            if (!input) {
-                return null;
-            }
-
-            var decodeState = {
-                input: input,
-                index: 0,
-                val: 0,
-                bits: 0
-            };
-
-            var version = robozzle.decodeBits(decodeState, 3);
-            if (version != 0) {
-                return null;
-            }
-
-            var program = [];
-            var length = robozzle.decodeBits(decodeState, 3);
-            for (var j = 0; j < length; j++) {
-                var sub = [];
-                var sublen = robozzle.decodeBits(decodeState, 4);
-                for (var i = 0; i < sublen; i++) {
-                    sub.push(robozzle.decodeCommand(decodeState));
-                }
-                program.push(sub);
-            }
-
-            return program;
-        };
-
 
         displayProgram(level, commands) {
             if (!commands) {
@@ -1425,7 +1244,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             };
             var i, j;
 
-            robozzle.encodeBits(encodeState, 0, 3); // Version number = 0
+            encodeBits(encodeState, 0, 3); // Version number = 0
             for (j = 0; j < level.Colors.length; j++) {
                 var colors = level.Colors[j];
                 var items = level.Items[j];
@@ -1443,18 +1262,18 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                             val = val + 3;
                         }
                     }
-                    robozzle.encodeBits(encodeState, val, 3);
+                    encodeBits(encodeState, val, 3);
                 }
             }
-            robozzle.encodeBits(encodeState, level.RobotRow, 4);
-            robozzle.encodeBits(encodeState, level.RobotCol, 4);
-            robozzle.encodeBits(encodeState, level.RobotDir, 2);
+            encodeBits(encodeState, level.RobotRow, 4);
+            encodeBits(encodeState, level.RobotCol, 4);
+            encodeBits(encodeState, level.RobotDir, 2);
             for (i = 0; i < level.SubLengths.length; i++) {
-                robozzle.encodeBits(encodeState, level.SubLengths[i], 4);
+                encodeBits(encodeState, level.SubLengths[i], 4);
             }
-            robozzle.encodeBits(encodeState, level.AllowedCommands, 3);
+            encodeBits(encodeState, level.AllowedCommands, 3);
 
-            robozzle.encodeBits(encodeState, 0, 5); // Flush
+            encodeBits(encodeState, 0, 5); // Flush
             return encodeState.output;
         };
 
@@ -1470,7 +1289,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 bits: 0
             };
 
-            var version = robozzle.decodeBits(decodeState, 3);
+            var version = decodeBits(decodeState, 3);
             if (version != 0) {
                 return null;
             }
@@ -1481,7 +1300,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 var colors = '';
                 var items = '';
                 for (let i = 0; i < 16; i++) {
-                    var val = robozzle.decodeBits(decodeState, 3);
+                    var val = decodeBits(decodeState, 3);
                     if (val == 0) {
                         colors += 'B';
                         items += '#';
@@ -1509,14 +1328,14 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
             let robotSubLengths: number[] = [];
             for (let i = 0; i < 5; i++) {
-                robotSubLengths.push(robozzle.decodeBits(decodeState, 4));
+                robotSubLengths.push(decodeBits(decodeState, 4));
             }
 
             return {
-                RobotRow: robozzle.decodeBits(decodeState, 4),
-                RobotCol: robozzle.decodeBits(decodeState, 4),
-                RobotDir: robozzle.decodeBits(decodeState, 2),
-                AllowedCommands: robozzle.decodeBits(decodeState, 3),
+                RobotRow: decodeBits(decodeState, 4),
+                RobotCol: decodeBits(decodeState, 4),
+                RobotDir: decodeBits(decodeState, 2),
+                AllowedCommands: decodeBits(decodeState, 3),
                 Title: '',
                 About: '',
                 Colors: robotColors,
@@ -2451,9 +2270,9 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
 
             if ('puzzle' in urlParams) {
-                robozzle.setGame(urlParams['puzzle'], robozzle.decodeProgram(urlParams['program']));
+                robozzle.setGame(urlParams['puzzle'], decodeProgram(urlParams['program']));
             } else if ('design' in urlParams) {
-                robozzle.designProgram = robozzle.decodeProgram(urlParams['program']);
+                robozzle.designProgram = decodeProgram(urlParams['program']);
                 robozzle.design = robozzle.decodeDesign(urlParams['design']);
                 robozzle.displayDesign();
             } else {
@@ -2514,13 +2333,13 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         updatePuzzleUrl() {
             if (robozzle.level.Id) {
                 robozzle.setPuzzleUrl(robozzle.level.Id, function () {
-                    return robozzle.encodeProgram();
+                    return encodeProgram(robozzle.program);
                 });
             } else {
                 robozzle.setDesignUrl(function () {
                     return robozzle.encodeDesign(robozzle.design);
                 }, function () {
-                    return robozzle.encodeProgram();
+                    return encodeProgram(robozzle.program);
                 });
             }
         };
@@ -2529,7 +2348,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.setDesignUrl(function () {
                 return robozzle.encodeDesign(robozzle.readDesign());
             }, function () {
-                return robozzle.encodeProgram();
+                return encodeProgram(robozzle.program);
             });
         };
 
