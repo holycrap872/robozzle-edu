@@ -1,22 +1,21 @@
-import { RegionInfo } from "aws-cdk-lib/region-info";
 import { RobotDirection } from "./baseTypes";
 
 export interface Level {
-  Id: string,
-  NextId: string | null,
+  Id?: string,
+  NextId?: string | null,
   Colors: string[],
   Items: string[],
   RobotRow: number,
   RobotCol: number,
   RobotDir: RobotDirection,
   AllowedCommands: number,
-  DisallowSubs: boolean,
-  DisallowColors: boolean,
+  DisallowSubs?: boolean,
+  DisallowColors?: boolean,
   Title: string,
   About: string,
   SubLengths: number[],
-  Tutorial: string[],
-  ContentComment: string,
+  Tutorial?: string[],
+  ContentComment?: string,
 }
 
 
