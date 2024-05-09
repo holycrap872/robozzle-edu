@@ -1458,7 +1458,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return encodeState.output;
         };
 
-        decodeDesign(input) {
+        decodeDesign(input): Level {
             if (!input) {
                 return null;
             }
@@ -1469,23 +1469,18 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 val: 0,
                 bits: 0
             };
-            var i, j;
 
             var version = robozzle.decodeBits(decodeState, 3);
             if (version != 0) {
                 return null;
             }
 
-            var level = {
-                Colors: [],
-                Items: [],
-                SubLengths: []
-            };
-
-            for (j = 0; j < 12; j++) {
+            let robotColors: string[] = [];
+            let robotItems: string[] = [];
+            for (let j = 0; j < 12; j++) {
                 var colors = '';
                 var items = '';
-                for (i = 0; i < 16; i++) {
+                for (let i = 0; i < 16; i++) {
                     var val = robozzle.decodeBits(decodeState, 3);
                     if (val == 0) {
                         colors += 'B';
@@ -1508,20 +1503,25 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                         }
                     }
                 }
-                level.Colors.push(colors);
-                level.Items.push(items);
+                robotColors.push(colors);
+                robotItems.push(items);
             }
-            level.RobotRow = robozzle.decodeBits(decodeState, 4);
-            level.RobotCol = robozzle.decodeBits(decodeState, 4);
-            level.RobotDir = robozzle.decodeBits(decodeState, 2);
-            for (i = 0; i < 5; i++) {
-                level.SubLengths.push(robozzle.decodeBits(decodeState, 4));
-            }
-            level.AllowedCommands = robozzle.decodeBits(decodeState, 3);
-            level.Title = '';
-            level.About = '';
 
-            return level;
+            let robotSubLengths: number[] = [];
+            for (let i = 0; i < 5; i++) {
+                robotSubLengths.push(robozzle.decodeBits(decodeState, 4));
+            }
+
+            return {
+                RobotRow: robozzle.decodeBits(decodeState, 4),
+                RobotCol: robozzle.decodeBits(decodeState, 4),
+                RobotDir: robozzle.decodeBits(decodeState, 2),
+                AllowedCommands: robozzle.decodeBits(decodeState, 3),
+                Title: '',
+                About: '',
+                Colors: robotColors,
+                Items: robotItems,
+            }
         };
 
         submitDesign(callback) {
@@ -1604,15 +1604,13 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         }
 
         readDesign(): Level {
-            var i, j;
-
             let robotColors: string[] = [];
             let robotItems: string[] = [];
-            for (j = 0; j < robozzle.board.length; j++) {
+            for (let j = 0; j < robozzle.board.length; j++) {
                 var colors = '';
                 var items = '';
                 var row = robozzle.board[j];
-                for (i = 0; i < row.length; i++) {
+                for (let i = 0; i < row.length; i++) {
                     var $cell = row[i];
 
                     var color = $cell.getClass('-color');
@@ -1635,7 +1633,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
 
             let robotSubLengths: number[] = [];
-            for (i = 0; i < 5; i++) {
+            for (let i = 0; i < 5; i++) {
                 var min = i == 0 ? 1 : 0;
                 var val = parseInt($('#design-f' + (i + 1)).val());
                 if (val < min) {
@@ -1664,6 +1662,9 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 AllowedCommands: robotAllowedCommands,
                 Title: $('#design-title').val(),
                 About: $('#design-about').val(),
+                SubLengths: robotSubLengths,
+                Colors: robotColors,
+                Items: robotItems,
             }
         };
 
