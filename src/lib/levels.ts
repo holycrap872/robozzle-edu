@@ -13,7 +13,7 @@ export interface Level {
   DisallowColors?: boolean,
   Title: string,
   About: string,
-  SubLengths: number[],
+  SubLengths?: number[],
   Tutorial?: string[],
   ContentComment?: string,
 }

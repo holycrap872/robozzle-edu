@@ -1381,8 +1381,8 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 RobotCol: robozzle.robot.robotCol,
                 RobotRow: robozzle.robot.robotRow,
                 AllowedCommands: robotAllowedCommands,
-                Title: $('#design-title').val(),
-                About: $('#design-about').val(),
+                Title: String($('#design-title').val()),
+                About: String($('#design-about').val()),
                 SubLengths: robotSubLengths,
                 Colors: robotColors,
                 Items: robotItems,
@@ -1508,7 +1508,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
 
             // Don't animate the stack when not stepping
-            if (robozzle.robotState != RobotStates.Stepping) {
+            if (robozzle.robot.robotState != RobotStates.Stepping) {
                 robozzle.stack.unshift({ sub: index, cmd: 0 });
                 robozzle.stepNext(0);
                 return;
@@ -1882,7 +1882,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             event.preventDefault();
             var $register = $('#dialog-register');
 
-            var name = $register.find('input[name="name"]').val();
+            var name = String($register.find('input[name="name"]').val());
             if (name.length < 4 || name.length > 14) {
                 $('#dialog-register-error').text('Username must be 4-14 characters long.').show();
                 return;
@@ -1892,7 +1892,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 return;
             }
 
-            var password = $register.find('input[name="password"]').val();
+            var password = String($register.find('input[name="password"]').val());
             if (password.length < 4 || password.length > 20) {
                 $('#dialog-register-error').text('Password must be 4-20 characters long.').show();
                 return;
@@ -1904,7 +1904,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 return;
             }
 
-            var email = $register.find('input[name="email"]').val();
+            var email = String($register.find('input[name="email"]').val());
 
             $register.find(':input').prop('disabled', true);
             robozzle.register(name, robozzle.hashPassword(password), email,
@@ -2536,7 +2536,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         };
         setRobotSpeed(localStorage.getItem('robotSpeed'));
         $('#program-speed').val(robozzle.robot.robotSpeed).change(function () {
-            setRobotSpeed($(this).val());
+            setRobotSpeed(String($(this).val()));
             localStorage.setItem('robotSpeed', String(robozzle.robot.robotSpeed));
         });
 

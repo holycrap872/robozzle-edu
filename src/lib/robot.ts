@@ -1,11 +1,21 @@
 import { RobotDirection, RobotStates } from "./baseTypes";
 
+export interface RobotAnimation {
+  left: number,
+  top: number,
+  deg: number,
+  scale: number,
+  stack: number,
+  stackCount: number,
+}
+
+
 export class Robot {
   robotDir: RobotDirection;
   robotDeg: number;
   robotCol: number;
   robotRow: number;
-  robotAnimation: any;
+  robotAnimation: RobotAnimation | null;
   robotState: RobotStates;
   robotDelay: number;
   robotSpeed: number;
