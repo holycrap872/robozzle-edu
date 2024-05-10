@@ -50,13 +50,13 @@ export interface StateToEncode {
 }
 
 export function encodeBits(encodeState: StateToEncode, val: number, bits: number): void {
-  for (var i = 0; i < bits; i++) {
+  for (let i = 0; i < bits; i++) {
     if (val & (1 << i)) {
       encodeState.val |= (1 << encodeState.bits);
     }
     encodeState.bits++;
     if (encodeState.bits == 6) {
-      var c;
+      let c: string;
       if (encodeState.val < 26) {
         c = String.fromCharCode(97 + encodeState.val);
       } else if (encodeState.val < 52) {
@@ -77,18 +77,18 @@ export function encodeBits(encodeState: StateToEncode, val: number, bits: number
 
 
 export interface StateToDecode {
-  bits: number,
   input: string,
   index: number,
+  bits: number,
   val: number,
 }
 
 
 export function decodeBits(decodeState: StateToDecode, bits: number): number {
   let val = 0;
-  for (var i = 0; i < bits; i++) {
+  for (let i = 0; i < bits; i++) {
     if (decodeState.bits == 0) {
-      var c = decodeState.input.charCodeAt(decodeState.index);
+      let c = decodeState.input.charCodeAt(decodeState.index);
       decodeState.index++;
       if (c >= 97 && c < 97 + 26) {
         decodeState.val = c - 97;
