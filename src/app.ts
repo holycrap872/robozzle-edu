@@ -55,6 +55,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         tutorialStage: number;
 
         // design info
+        design: Level | null;
         designSelection: boolean;
         designSelectionColor: any;
         designSelectionItem: any;
@@ -110,6 +111,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             this.tutorialStage = 0;
 
             // design info
+            this.design = null;
             this.designSelection = false;
             this.designSelectionColor = null;
             this.designSelectionItem = null;
@@ -438,7 +440,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        displayBoard(level, design) {
+        displayBoard(level: Level, do_design: boolean): void {
             var stars = 0;
             var board = [];
             var $board = $('<table class="board__grid"/>');
@@ -459,7 +461,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                             $item.updateClass('-item', 'star');
                             stars++;
                         }
-                        if (!design) {
+                        if (!do_design) {
                             (function (row, col) {
                                 $cell.on('click', function (e) {
                                     robozzle.setBoardBreakpoint(row, col);
@@ -506,10 +508,10 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.steps = 0;
             robozzle.stack = [{ sub: 0, cmd: 0 }];
             robozzle.stackBreakpoint = null;
-            robozzle.robot.robotDir = parseInt(level.RobotDir);
-            robozzle.robot.robotDeg = parseInt(level.RobotDir) * 90;
-            robozzle.robot.robotCol = parseInt(level.RobotCol);
-            robozzle.robot.robotRow = parseInt(level.RobotRow);
+            robozzle.robot.robotDir = level.RobotDir;
+            robozzle.robot.robotDeg = level.RobotDir * 90;
+            robozzle.robot.robotCol = level.RobotCol;
+            robozzle.robot.robotRow = level.RobotRow;
             robozzle.robot.robotAnimation = {
                 left: robozzle.robot.robotCol * 40,
                 top: robozzle.robot.robotRow * 40,
@@ -951,7 +953,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        displayGame(level, program) {
+        displayGame(level: Level, program): void {
             if (!level) {
                 robozzle.navigateIndex();
                 return;
@@ -1002,7 +1004,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.displayTutorial(level);
         };
 
-        setGame(id, program) {
+        setGame(id: string, program): void {
             robozzle.design = null;
             var levels = robozzle.levels;
             if (isTutorialLevel(id)) {
@@ -1285,7 +1287,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        submitDesign(callback) {
+        submitDesign(callback): void {
             if (!robozzle.design) {
                 callback('Invalid puzzle.');
                 return;
@@ -1389,7 +1391,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        displayDesign() {
+        displayDesign(): void {
             robozzle.setPageTab('makepuzzle');
             $('#content-game').show();
             $('#content-game').children().hide();
@@ -1421,7 +1423,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.displayTutorial(null);
         };
 
-        moveRobot() {
+        moveRobot(): void {
             var crash = false;
             var col = robozzle.robot.robotCol;
             var row = robozzle.robot.robotRow;
@@ -1466,9 +1468,9 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.stepWait();
         };
 
-        turnRobot(right: boolean): void {
+        turnRobot(is_right: boolean): void {
             var dir = robozzle.robot.robotDir;
-            if (right) {
+            if (is_right) {
                 dir++;
                 robozzle.robot.robotDeg += 90;
             } else {
@@ -1480,12 +1482,12 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.stepWait();
         };
 
-        paintTile($cell, color) {
+        paintTile($cell, color): void {
             $cell.updateClass('-color', color);
             robozzle.stepWait();
         };
 
-        callSub(calls, index) {
+        callSub(calls, index: number): void {
             if (calls & (1 << index)) {
                 // Infinite loop
                 robozzle.setRobotState(RobotStates.Finished);
@@ -1542,7 +1544,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        stepReset() {
+        stepReset(): void {
             if (robozzle.robot.robotState != RobotStates.Reset) {
                 $(robozzle.robot.robotAnimation).stop(true, false);
                 $('.-program-highlight').removeClass('-program-highlight');
@@ -1551,7 +1553,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        stepWait() {
+        stepWait(): void {
             if (robozzle.robot.robotState == RobotStates.Finished) {
                 return;
             }
@@ -1588,7 +1590,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        currentCommand() {
+        currentCommand(): void {
             if (!robozzle.stack.length) {
                 return null;
             }
@@ -1600,7 +1602,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             return robozzle.currentCommand();
         };
 
-        stepExecute(next, calls) {
+        stepExecute(next, calls): void {
             // Clear highlight on previous command
             $(robozzle.robot.robotAnimation).queue(function () {
                 $('.-program-highlight').removeClass('-program-highlight');
@@ -1682,11 +1684,11 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        stepStart() {
+        stepStart(): void {
             robozzle.stepExecute(false, 0);
         };
 
-        stepNext(calls) {
+        stepNext(calls): void {
             robozzle.stepExecute(true, calls);
         };
 
@@ -1708,7 +1710,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        hashPassword(password) {
+        hashPassword(password: string): string {
             var salt = '5A6fKpgSnXoMpxbcHcb7';
             return CryptoJS.SHA1(password + salt).toString();
         };
@@ -1771,7 +1773,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        logIn(userName: string, password: string, callback) {
+        logIn(userName: string, password: string, callback): void {
             // Build the request
             var request = {
                 userName: userName,
@@ -1798,13 +1800,13 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.logInCallbacks = callbacks;
         };
 
-        logInCancel() {
+        logInCancel(): void {
             if (robozzle.logInCallbacks) {
                 robozzle.logInCallbacks.empty();
             }
         };
 
-        logOut() {
+        logOut(): void {
             robozzle.userName = null;
             robozzle.password = null;
             robozzle.solvedLevels = {};
@@ -1821,7 +1823,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.displayLevels();
         };
 
-        showDialog($dialog, cancel) {
+        showDialog($dialog, cancel): void {
             $('#dialog-modal').show();
             $('#dialogs').show();
             $dialog.show();
@@ -1833,20 +1835,20 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             };
         };
 
-        hideDialog($dialog) {
+        hideDialog($dialog): void {
             $dialog.hide();
             $('#dialogs').hide();
             $('#dialog-modal').hide();
             robozzle.cancelDialogCallback = null;
         };
 
-        cancelDialog() {
+        cancelDialog(): void {
             if (robozzle.cancelDialogCallback) {
                 robozzle.cancelDialogCallback();
             }
         };
 
-        showMessage(title, message) {
+        showMessage(title: string, message: string): void {
             var $dialog = $('#dialog-message');
             $dialog.find('.dialog-title').text(title);
             $dialog.find('.dialog-message').text(message);
@@ -2143,7 +2145,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             var $dialog = $('#dialog-tutorial-solved');
             robozzle.hideDialog($dialog);
             if (robozzle.level.NextId) {
-                robozzle.navigatePuzzle(robozzle.level.NextId);
+                robozzle.navigatePuzzle(parseInt(robozzle.level.NextId));
             } else {
                 robozzle.setSortKind(0);
                 robozzle.setPageIndex(0);
