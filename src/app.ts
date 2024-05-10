@@ -3,6 +3,13 @@ import { DecodedCommand, decodeBits, decodeProgram, encodeBits, encodeProgram, e
 import { Level, TUTORIAL_LEVELS, getDefaultLevel, isTutorialLevel } from './lib/levels';
 import { Robot } from './lib/robot';
 
+declare global {
+    interface JQuery {
+        pointerEventsNone(): JQuery;
+        getClass(): string;
+        updateClass(x: string, y: string): void;
+    }
+}
 
 var _____WB$wombat$assign$function_____ = function (name) { return (self._wb_wombat && self._wb_wombat.local_init && self._wb_wombat.local_init(name)) || self[name]; };
 if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; return this; } }
@@ -68,6 +75,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         stack: StackElement[] | null;
         stackBreakpoint: StackBreakpoint | null;
+        board: JQuery<HTMLElement>[][] | null;
         boardBreakpoint: BoardBreakpoint | null;
 
         constructor() {
@@ -129,6 +137,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
             this.stack = null;
             this.stackBreakpoint = null;
+            this.board = null;
             this.boardBreakpoint = null;
         }
 
@@ -453,12 +462,12 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         displayBoard(level: Level, do_design: boolean): void {
             var stars = 0;
-            var board = [];
+            var board: JQuery<HTMLElement>[][] = [];
             var $board = $('<table class="board__grid"/>');
             for (var j = 0; j < level.Colors.length; j++) {
                 var colors = level.Colors[j];
                 var items = level.Items[j];
-                var row = [];
+                var row: JQuery<HTMLElement>[] = [];
                 var $row = $('<tr/>');
                 for (var i = 0; i < colors.length; i++) {
                     var $item = $('<div class="tile__item"/>');
