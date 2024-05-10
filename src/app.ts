@@ -1,4 +1,4 @@
-import { RobotDirection, RobotStates } from './lib/baseTypes';
+import { BoardBreakpoint, RobotDirection, RobotStates, StackBreakpoint, StackElement } from './lib/baseTypes';
 import { DecodedCommand, decodeBits, decodeProgram, encodeBits, encodeProgram, encodeSOAP } from './lib/encoder';
 import { Level, TUTORIAL_LEVELS, getDefaultLevel, isTutorialLevel } from './lib/levels';
 import { Robot } from './lib/robot';
@@ -49,7 +49,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         hoverCommand: string | null;
         hoverCondition: string | null;
         robot: Robot;
-        boardBreakPoint: any;
 
         // tutorial info
         tutorialStage: number;
@@ -66,6 +65,10 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
         program: JQuery<HTMLElement>[][] | null;
         designProgram: DecodedCommand[][] | null;
+
+        stack: StackElement[] | null;
+        stackBreakpoint: StackBreakpoint | null;
+        boardBreakpoint: BoardBreakpoint | null;
 
         constructor() {
             this.level = null;
@@ -106,7 +109,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             this.selectionOffset = null;
             this.hoverCommand = null;
             this.hoverCondition = null;
-            this.boardBreakPoint = null;
             this.robot = new Robot();
 
             // tutorial info
@@ -124,6 +126,10 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
 
             this.program = null;
             this.designProgram = null;
+
+            this.stack = null;
+            this.stackBreakpoint = null;
+            this.boardBreakpoint = null;
         }
 
 

@@ -19,3 +19,19 @@ export interface RobotPosition {
   col: number,
   direction: RobotDirection,
 }
+
+export interface StackElement {
+  sub: number,
+  cmd: number,
+}
+
+
+export interface StackBreakpoint {
+  index: number,
+}
+
+
+export interface BoardBreakpoint {
+  row: number,
+  col: number,
+}
