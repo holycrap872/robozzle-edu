@@ -6,8 +6,8 @@ import { Robot } from './lib/robot';
 declare global {
     interface JQuery {
         pointerEventsNone(): JQuery;
-        getClass(): string;
-        updateClass(x: string, y: string): void;
+        getClass(className: string): string;
+        updateClass(className: string, newVvalue: string): void;
     }
 }
 
