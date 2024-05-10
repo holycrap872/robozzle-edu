@@ -261,7 +261,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                 html.addClass('-solved');
             }
             html.click(function () {
-                robozzle.navigatePuzzle($(this).attr('data-level-id'));
+                robozzle.navigatePuzzle(String($(this).attr('data-level-id')));
             });
             html.find('.level-item__level-details').click(function (e) {
                 e.stopPropagation();
@@ -2148,7 +2148,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             var $dialog = $('#dialog-tutorial-solved');
             robozzle.hideDialog($dialog);
             if (robozzle.level.NextId) {
-                robozzle.navigatePuzzle(parseInt(robozzle.level.NextId));
+                robozzle.navigatePuzzle(robozzle.level.NextId);
             } else {
                 robozzle.setSortKind(0);
                 robozzle.setPageIndex(0);
@@ -2217,7 +2217,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.navigateUrl("index.html");
         };
 
-        navigatePuzzle(id: number): void {
+        navigatePuzzle(id: string): void {
             robozzle.navigateUrl("index.html?puzzle=" + id);
         };
 
@@ -2225,38 +2225,28 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.navigateUrl("index.html?design=");
         };
 
-        setPuzzleUrl(id, program): void {
+        setPuzzleUrl(id: string, program_string: string): void {
             robozzle.setUrl(function () {
-                return "index.html?puzzle=" + id + "&program=" + program();
+                return "index.html?puzzle=" + id + "&program=" + program_string;
             });
         };
 
-        setDesignUrl(design, program): void {
+        setDesignUrl(design_string: string, program_string: string): void {
             robozzle.setUrl(function () {
-                return "index.html?design=" + design() + '&program=' + program();
+                return "index.html?design=" + design_string + '&program=' + program_string;
             });
         };
 
         updatePuzzleUrl(): void {
             if (robozzle.level.Id) {
-                robozzle.setPuzzleUrl(robozzle.level.Id, function () {
-                    return encodeProgram(robozzle.program);
-                });
+                robozzle.setPuzzleUrl(robozzle.level.Id, encodeProgram(robozzle.program));
             } else {
-                robozzle.setDesignUrl(function () {
-                    return robozzle.encodeDesign(robozzle.design);
-                }, function () {
-                    return encodeProgram(robozzle.program);
-                });
+                robozzle.setDesignUrl(robozzle.encodeDesign(robozzle.design), encodeProgram(robozzle.program));
             }
         };
 
         updateDesignUrl(): void {
-            robozzle.setDesignUrl(function () {
-                return robozzle.encodeDesign(robozzle.readDesign());
-            }, function () {
-                return encodeProgram(robozzle.program);
-            });
+            robozzle.setDesignUrl(robozzle.encodeDesign(robozzle.readDesign()), encodeProgram(robozzle.program));
         };
 
         setPageTab(name: string): void {
