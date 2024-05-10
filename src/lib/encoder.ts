@@ -148,7 +148,7 @@ export function encodeCommand(encodeState: StateToEncode, cond_str: string, cmd_
   }
 };
 
-export function encodeProgram(program): string {
+export function encodeProgram(program: JQuery<HTMLElement>[][]): string {
   var encodeState = {
     output: '',
     val: 0,
@@ -220,7 +220,7 @@ export function decodeCommand(decodeState: StateToDecode): DecodedCommand {
   return { condition: cond_str, command: cmd_str };
 };
 
-export function decodeProgram(input: string) {
+export function decodeProgram(input: string): DecodedCommand[][] {
   if (!input) {
     return null;
   }
@@ -237,10 +237,10 @@ export function decodeProgram(input: string) {
     return null;
   }
 
-  var program = [];
+  var program: DecodedCommand[][] = [];
   var length = decodeBits(decodeState, 3);
   for (var j = 0; j < length; j++) {
-    var sub = [];
+    var sub: DecodedCommand[] = [];
     var sublen = decodeBits(decodeState, 4);
     for (var i = 0; i < sublen; i++) {
       sub.push(decodeCommand(decodeState));

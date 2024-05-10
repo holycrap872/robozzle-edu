@@ -1,5 +1,5 @@
 import { RobotDirection, RobotStates } from './lib/baseTypes';
-import { decodeBits, decodeProgram, encodeBits, encodeProgram, encodeSOAP } from './lib/encoder';
+import { DecodedCommand, decodeBits, decodeProgram, encodeBits, encodeProgram, encodeSOAP } from './lib/encoder';
 import { Level, TUTORIAL_LEVELS, getDefaultLevel, isTutorialLevel } from './lib/levels';
 import { Robot } from './lib/robot';
 
@@ -64,6 +64,8 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         designHoverColor: any;
         designHoverRobot: any;
 
+        program: JQuery<HTMLElement>[][] | null;
+        designProgram: DecodedCommand[][] | null;
 
         constructor() {
             this.level = null;
@@ -119,6 +121,9 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             this.designSelectionOffset = null;
             this.designHoverColor = null;
             this.designHoverRobot = null;
+
+            this.program = null;
+            this.designProgram = null;
         }
 
 
@@ -532,7 +537,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             for (var i = 0; i < robozzle.stack.length; i++) {
                 var sub = robozzle.program[robozzle.stack[i].sub];
                 for (var j = robozzle.stack[i].cmd; j < sub.length && count < 41; j++) {
-                    var cond = sub[j].getClass('-condition');
                     var cmd = sub[j].find('.command').getClass('-command');
                     if (cmd) {
                         var stackCmd = sub[j].clone().removeClass('-program-highlight');
@@ -650,14 +654,14 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
         };
 
 
-        displayProgram(level, commands) {
+        displayProgram(level: Level, commands: DecodedCommand[][]): void {
             if (!commands) {
                 commands = [];
             }
-            var program = [];
+            var program: JQuery<HTMLElement>[][] = [];
             var $sublist = $('#program-list').empty();
             for (var j = 0; j < 5; j++) {
-                var sub = [];
+                var sub: JQuery<HTMLElement>[] = [];
                 var sublength: number = level.SubLengths[j];
                 if (!sublength) {
                     program.push(sub);
@@ -709,12 +713,12 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
                     if (j < commands.length && i < commands[j].length) {
                         // TODO: validate commands
                         if (commands[j][i][0] != null) {
-                            $condition.updateClass('-condition', commands[j][i][0]);
-                            $command.updateClass('-command', commands[j][i][1]);
+                            $condition.updateClass('-condition', commands[j][i].condition);
+                            $command.updateClass('-command', commands[j][i].command);
                             $label.hide();
                         } else if (commands[j][i][1] != null) {
                             $condition.updateClass('-condition', 'any');
-                            $command.updateClass('-command', commands[j][i][1]);
+                            $command.updateClass('-command', commands[j][i].command);
                             $label.hide();
                         }
                     }
@@ -732,16 +736,16 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.program = program;
         };
 
-        readProgram() {
-            var program = [];
+        readProgram(): DecodedCommand[][] {
+            var program: DecodedCommand[][] = [];
             for (var j = 0; j < robozzle.program.length; j++) {
                 var $sub = robozzle.program[j];
-                var sub = [];
+                var sub: DecodedCommand[] = [];
                 for (var i = 0; i < $sub.length; i++) {
                     var $cmd = $sub[i];
                     var cond = $cmd.getClass('-condition');
                     var cmd = $cmd.find('.command').getClass('-command');
-                    sub.push([cond, cmd]);
+                    sub.push({ condition: cond, command: cmd });
                 }
                 program.push(sub);
             }
@@ -953,7 +957,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             }
         };
 
-        displayGame(level: Level, program): void {
+        displayGame(level: Level, program: DecodedCommand[][]): void {
             if (!level) {
                 robozzle.navigateIndex();
                 return;
@@ -1004,7 +1008,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             robozzle.displayTutorial(level);
         };
 
-        setGame(id: string, program): void {
+        setGame(id: string, program: DecodedCommand[][]): void {
             robozzle.design = null;
             var levels = robozzle.levels;
             if (isTutorialLevel(id)) {
@@ -1498,7 +1502,6 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             var count = 0;
             var sub = robozzle.program[index];
             for (var j = 0; j < sub.length; j++) {
-                var cond = sub[j].getClass('-condition');
                 var cmd = sub[j].find('.command').getClass('-command');
                 if (cmd) {
                     count++;
@@ -1590,7 +1593,7 @@ if (!self.__WB_pmw) { self.__WB_pmw = function (obj) { this.__WB_source = obj; r
             });
         };
 
-        currentCommand(): void {
+        currentCommand(): JQuery<HTMLElement> {
             if (!robozzle.stack.length) {
                 return null;
             }
